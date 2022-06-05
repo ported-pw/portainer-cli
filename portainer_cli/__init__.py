@@ -296,8 +296,11 @@ class PortainerCLI(object):
     def create_stack(self, stack_name, endpoint_id, stack_file='', env_file='', *args):
         logger.info('Creating stack name={}'.format(stack_name))
         swarm_url = 'endpoints/{}/docker/swarm'.format(endpoint_id)
-        swarm_id = self.request(swarm_url, self.METHOD_GET).json().get('ID')
-        self.swarm_id = swarm_id
+        try:
+            swarm_id = self.request(swarm_url, self.METHOD_GET).json().get('ID')
+            self.swarm_id = swarm_id
+        except requests.exceptions.HTTPError:
+            logger.warning("Request to get Swarm ID failed, defaulting to compose")
         stack_url = 'stacks?type={}&method=string&endpointId={}'.format(
             1 if swarm_id is not None else 2,
             endpoint_id
