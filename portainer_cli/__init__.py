@@ -5,7 +5,7 @@ import logging
 import json
 import plac
 import validators
-from requests import Request, Session
+from requests import Request, Session, HTTPError
 
 
 try:
@@ -299,7 +299,7 @@ class PortainerCLI(object):
         try:
             swarm_id = self.request(swarm_url, self.METHOD_GET).json().get('ID')
             self.swarm_id = swarm_id
-        except requests.exceptions.HTTPError:
+        except HTTPError:
             logger.warning("Request to get Swarm ID failed, defaulting to compose")
         stack_url = 'stacks?type={}&method=string&endpointId={}'.format(
             1 if swarm_id is not None else 2,
