@@ -55,6 +55,7 @@ class PortainerCLI(object):
     local = False
     _base_url = 'http://localhost:9000/'
     _jwt = None
+    _headers = None
     _proxies = {}
     _swarm_id = None
 
@@ -76,6 +77,18 @@ class PortainerCLI(object):
     @jwt.setter
     def jwt(self, value):
         self._jwt = value
+        self.persist()
+
+    @property
+    def headers(self):
+        return self._headers
+
+    @headers.setter
+    def headers(self, value):
+        try:
+            self._headers = {key: value for key, value in [header.split("=") for header in value.split(",")]}
+        except:
+            raise Exception("Invalid format, only the following is accepted: NAME=value,ANOTHER_NAME=value1")
         self.persist()
 
     @property
@@ -119,6 +132,7 @@ class PortainerCLI(object):
         data = {
             'base_url': self.base_url,
             'jwt': self.jwt,
+            'headers': self.headers,
         }
         logger.info('persisting configuration: {}'.format(data))
         data_file = open(self.data_path, 'w+')
@@ -134,9 +148,15 @@ class PortainerCLI(object):
         logger.info('configuration loaded: {}'.format(data))
         self._base_url = data.get('base_url')
         self._jwt = data.get('jwt')
+        self._headers = data.get('headers')
 
-    def configure(self, base_url):
+    @plac.annotations(
+        base_url=('Base URL', 'positional', None),
+        extra_headers=('Comma-separated additional headers', 'option', None, str, None)
+    )
+    def configure(self, base_url, extra_headers):
         self.base_url = base_url
+        self.headers = extra_headers
 
     def login(self, username, password):
         response = self.request(
@@ -498,6 +518,9 @@ class PortainerCLI(object):
             prepped.headers['Content-Length'] = len(prepped.body)
         if self.jwt:
             prepped.headers['Authorization'] = 'Bearer {}'.format(self.jwt)
+        if self.headers:
+            prepped.headers.update(self.headers)
+        print(prepped.headers)
         response = session.send(prepped, proxies=self.proxies, verify=False)
         logger.debug('request response: {}'.format(response.content))
         response.raise_for_status()
