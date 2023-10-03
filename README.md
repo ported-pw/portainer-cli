@@ -31,6 +31,11 @@ portainer-cli configure base_url
 portainer-cli configure http://10.0.0.1:9000/
 ```
 
+**You can also pass additional headers, e.g.:**
+```bash
+portainer-cli configure https://portainer.mydomain.com/ -extra-headers=CF-Access-Client-Id=**.access,CF-Access-Client-Secret=***
+```
+
 ### login command
 
 Identify yourself and take action.
