@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "portainer-cli"
-version = "0.4.0"
+version = "0.4.1"
 description = "CLI to manage applications on Portainer for CI/CD"
 authors = ["Ilhasoft's Web Team <contato@ilhasoft.com.br>", "ported <contact@ported.pw>"]
 license = "MIT"
@@ -20,7 +20,7 @@ requests = "^2.31.0"
 validators = "^0.22.0"
 
 [tool.poetry.scripts]
-portainer-cli = "main:run"
+portainer-cli = "portainer_cli:cli"
 
 [build-system]
 requires = ["poetry-core"]
