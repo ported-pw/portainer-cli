@@ -232,10 +232,5 @@ portainer-cli request status
 
 ## Development
 
-This project use [Pipenv](https://pipenv.readthedocs.io/en/latest/) to manager Python packages.
-
-With Pipenv installed, run `make install` to install all development packages dependencies.
-
-Run `make lint` to run [flake8](http://flake8.pycqa.org/en/latest/) following PEP8 rules.
-
-Run `make` or `make sdist` to create/update `dist` directory.
+This project uses Poetry to manage dependencies and packaging.
+Simply run `poetry install` to get a development environment.
