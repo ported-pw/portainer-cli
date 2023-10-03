@@ -1,7 +1,5 @@
 # Portainer CLI
 
-Powered by [Ilhasoft's Web Team](http://www.ilhasoft.com.br/en/).
-
 Portainer CLI is a Python software to use in command line. Use this command line interface to easy communicate with your [Portainer](https://portainer.io/) application, like in a continuous integration and continuous deployment environments.
 
 ## Install

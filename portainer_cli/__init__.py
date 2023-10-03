@@ -156,7 +156,8 @@ class PortainerCLI(object):
     )
     def configure(self, base_url, extra_headers):
         self.base_url = base_url
-        self.headers = extra_headers
+        if extra_headers:
+            self.headers = extra_headers
 
     def login(self, username, password):
         response = self.request(
@@ -169,7 +170,7 @@ class PortainerCLI(object):
         )
         r = response.json()
         jwt = r.get('jwt')
-        logger.info('logged with jwt: {}'.format(jwt))
+        logger.info('logged in with jwt: {}'.format(jwt))
         self.jwt = jwt
 
     def get_users(self):
@@ -320,8 +321,8 @@ class PortainerCLI(object):
             self.swarm_id = self.request(swarm_url, self.METHOD_GET).json().get('ID')
         except HTTPError:
             logger.warning("Request to get Swarm ID failed, defaulting to compose")
-        stack_url = 'stacks?type={}&method=string&endpointId={}'.format(
-            1 if self.swarm_id is not None else 2,
+        stack_url = 'stacks/create/{}/string?endpointId={}'.format(
+            "swarm" if self.swarm_id is not None else "standalone",
             endpoint_id
         )
         stack_file_content = open(stack_file).read()
@@ -334,12 +335,12 @@ class PortainerCLI(object):
             ),
         )
         data = {
-            'StackFileContent': stack_file_content,
-            'Name': stack_name,
-            'Env': final_env if len(final_env) > 0 else []
+            'stackFileContent': stack_file_content,
+            'name': stack_name,
+            'env': final_env if len(final_env) > 0 else []
         }
         if self.swarm_id is not None:
-            data['SwarmID'] = self.swarm_id
+            data['swarmID'] = self.swarm_id
 
         logger.debug('create stack data: {}'.format(data))
         self.request(
@@ -520,8 +521,7 @@ class PortainerCLI(object):
             prepped.headers['Authorization'] = 'Bearer {}'.format(self.jwt)
         if self.headers:
             prepped.headers.update(self.headers)
-        print(prepped.headers)
-        response = session.send(prepped, proxies=self.proxies, verify=False)
+        response = session.send(prepped, proxies=self.proxies)
         logger.debug('request response: {}'.format(response.content))
         response.raise_for_status()
         if printc:
